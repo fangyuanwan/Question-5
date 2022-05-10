@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
  name: hello-ingress
  annotations:
-   konghq.com/plugins: three-per-min
+    kubernetes.io/ingress.class: kong
 spec:
  rules:
  - http:
@@ -22,3 +22,32 @@ spec:
            name: producer
            port:
              number: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+ name: hello
+ annotations:
+   konghq.com/plugins: three-per-min
+spec:
+ selector:
+   app: hello
+ ports:
+ - port: 80
+   targetPort: 8080
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: producer
+  annotations:
+   konghq.com/plugins: three-per-min
+spec:
+  type: NodePort
+  selector:
+    app: producer
+  ports:
+  - port: 80
+    targetPort: 5000
+    nodePort: 31290
